@@ -1,0 +1,92 @@
+{
+  "info": {
+    "_postman_id": "2eaa6204-2ad5-48b9-9aa2-1ef32f0f2d9d",
+    "name": "API Gerenciamento de Pedidos",
+    "description": "Coleção para as cinco evidências exigidas no projeto avaliativo. Execute na ordem e inicie pela criação válida.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "pedidoId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "01 - Criar pedido válido (201)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status HTTP é 201', function () { pm.response.to.have.status(201); });",
+              "const body = pm.response.json();",
+              "pm.test('Resposta contém dados do pedido', function () { pm.expect(body).to.have.property('id'); pm.expect(body.status).to.eql('recebido'); });",
+              "if (body.id !== undefined) { pm.collectionVariables.set('pedidoId', String(body.id)); }"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"cliente\": \"Carlos Silva\",\n  \"tipo\": \"entrega\",\n  \"valor\": 350,\n  \"prioridade\": \"normal\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": { "raw": "{{baseUrl}}/pedidos", "host": ["{{baseUrl}}"], "path": ["pedidos"] }
+      },
+      "response": []
+    },
+    {
+      "name": "02 - Validar cadastro inválido (400)",
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status HTTP é 400', function () { pm.response.to.have.status(400); });",
+        "pm.test('Resposta explica o erro', function () { pm.expect(pm.response.json()).to.have.property('detalhes'); });"
+      ] } }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"cliente\": \"   \",\n  \"tipo\": \"entrega\",\n  \"valor\": 350,\n  \"prioridade\": \"normal\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": { "raw": "{{baseUrl}}/pedidos", "host": ["{{baseUrl}}"], "path": ["pedidos"] }
+      },
+      "response": []
+    },
+    {
+      "name": "03 - Listar pedidos (200)",
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status HTTP é 200', function () { pm.response.to.have.status(200); });",
+        "pm.test('Resposta é uma lista', function () { pm.expect(pm.response.json()).to.be.an('array'); });"
+      ] } }],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/pedidos", "host": ["{{baseUrl}}"], "path": ["pedidos"] }
+      },
+      "response": []
+    },
+    {
+      "name": "04 - Consultar ID inexistente (404)",
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status HTTP é 404', function () { pm.response.to.have.status(404); });",
+        "pm.test('Resposta informa que não foi encontrado', function () { pm.expect(pm.response.json().erro).to.eql('Pedido não encontrado.'); });"
+      ] } }],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/pedidos/999999", "host": ["{{baseUrl}}"], "path": ["pedidos", "999999"] }
+      },
+      "response": []
+    },
+    {
+      "name": "05 - Atualizar status do pedido criado (200)",
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status HTTP é 200', function () { pm.response.to.have.status(200); });",
+        "pm.test('Status foi atualizado', function () { pm.expect(pm.response.json().status).to.eql('em_preparacao'); });"
+      ] } }],
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"status\": \"em_preparacao\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": { "raw": "{{baseUrl}}/pedidos/{{pedidoId}}/status", "host": ["{{baseUrl}}"], "path": ["pedidos", "{{pedidoId}}", "status"] }
+      },
+      "response": []
+    }
+  ]
+}
