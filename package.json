@@ -1,0 +1,21 @@
+{
+  "name": "api-gerenciamento-pedidos",
+  "version": "1.0.0",
+  "description": "API REST em camadas para gerenciamento de pedidos - projeto avaliativo TASII",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "jest --runInBand",
+    "test:watch": "jest --watch"
+  },
+  "keywords": ["node", "express", "api", "pedidos", "jest"],
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.1.1"
+  }
+}
